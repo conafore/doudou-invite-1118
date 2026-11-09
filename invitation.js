@@ -75,7 +75,7 @@ function buildMedalEdge() {
     segment.style.top = `${100 * a.y / height}%`;
     segment.style.width = `calc(${100 * Math.hypot(dx, dy) / width}% + .35px)`;
     segment.style.transform = `rotate(${angle}rad) rotateX(90deg) translateY(calc(var(--badge-depth) / -2))`;
-    segment.style.setProperty('--edge-tone', `hsl(225 10% ${61 + 22 * Math.sin(angle - .8)}%)`);
+    segment.style.setProperty('--edge-tone', `hsl(18 12% ${61 + 22 * Math.sin(angle - .8)}%)`);
     wall.append(segment);
   }
   badgeRotor.prepend(wall);
