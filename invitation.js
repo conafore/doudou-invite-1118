@@ -55,6 +55,29 @@ function startFrames() {
   if (!request) request = requestAnimationFrame(frame);
 }
 
+function buildMedalEdge() {
+  const outline = document.querySelector('#medal-outline');
+  const { width, height } = outline.ownerSVGElement.viewBox.baseVal;
+  const points = outline.points;
+  const wall = document.createDocumentFragment();
+  for (let i = 0; i < points.numberOfItems; i++) {
+    const a = points.getItem(i);
+    const b = points.getItem((i + 1) % points.numberOfItems);
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const angle = Math.atan2(dy, dx);
+    const segment = document.createElement('span');
+    segment.className = 'badge-edge';
+    segment.style.left = `${100 * a.x / width}%`;
+    segment.style.top = `${100 * a.y / height}%`;
+    segment.style.width = `calc(${100 * Math.hypot(dx, dy) / width}% + .35px)`;
+    segment.style.transform = `rotate(${angle}rad) rotateX(90deg) translateY(calc(var(--badge-depth) / -2))`;
+    segment.style.setProperty('--edge-tone', `hsl(225 10% ${61 + 22 * Math.sin(angle - .8)}%)`);
+    wall.append(segment);
+  }
+  badgeRotor.prepend(wall);
+}
+
 function idle(focus = false) {
   clearTimeout(timer);
   transitionId += 1;
@@ -163,6 +186,7 @@ function showFinale(focus) {
   film.pause();
   idleVideo.pause();
   badge.angle = badge.target = badge.shown = 0;
+  badgeButton.setAttribute('aria-pressed', 'false');
   badgeRotor.style.transform = '';
   badgeMotion.removeAttribute('style');
   revealItems.forEach(item => item.removeAttribute('style'));
@@ -176,7 +200,7 @@ function showFinale(focus) {
         opacity: { from: 0, to: 1, duration: 420 },
         y: { from: 55, to: 0 },
         scale: { from: .56, to: 1 },
-        rotateY: { from: -78, to: 0 },
+        rotateY: { from: -27, to: 0 },
         rotateZ: { from: -15, to: 0 },
         duration: 1180, ease: 'outExpo'
       }, 0)
@@ -191,6 +215,7 @@ function showFinale(focus) {
 
 function turnBadge(angle) {
   badge.angle = badge.target = angle;
+  badgeButton.setAttribute('aria-pressed', String(Math.abs(Math.round(angle / 180) % 2) === 1));
   if (reducedMotion.matches) badge.shown = angle;
   startFrames();
 }
@@ -208,7 +233,10 @@ badgeButton.addEventListener('pointermove', event => {
 });
 function releaseBadge(event) {
   if (!drag || !event.isPrimary) return;
-  if (drag.moved) clickAfterDrag = performance.now() + 350;
+  if (drag.moved) {
+    clickAfterDrag = performance.now() + 350;
+    turnBadge(Math.round(badge.angle / 180) * 180);
+  }
   drag = undefined;
   startFrames();
 }
@@ -240,4 +268,5 @@ reducedMotion.addEventListener('change', () => {
   startFrames();
 });
 
+buildMedalEdge();
 idle();

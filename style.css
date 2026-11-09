@@ -14,7 +14,6 @@ h1, h2, p { margin: 0; }
 button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 :is(button, a):focus-visible { outline: 2px solid #8289e0; outline-offset: 5px; }
 button svg { pointer-events: none; }
-.defs { position: absolute; width: 0; height: 0; pointer-events: none; }
 
 .invitation {
   --pad: clamp(24px, 7.25vw, 38px);
@@ -216,10 +215,11 @@ h1 { margin-top: 11px; }
 .final-body { display: grid; align-content: center; flex: 1 0 auto; gap: clamp(12px, 2.5dvh, 24px); }
 .award-section { display: grid; justify-items: center; }
 .badge-button {
+  --badge-depth: clamp(7px, 1.4dvh, 12px);
   position: relative;
-  width: clamp(140px, 36dvh, 302px);
+  width: clamp(142px, 34dvh, 286px);
   max-width: 100%;
-  aspect-ratio: 300 / 278;
+  aspect-ratio: 1;
   padding: 0;
   border: 0;
   border-radius: 40%;
@@ -228,14 +228,26 @@ h1 { margin-top: 11px; }
   cursor: grab;
   touch-action: pan-y;
   user-select: none;
+  transition: scale .17s var(--ease);
 }
-.badge-button:active { cursor: grabbing; }
-.badge-motion, .badge-rotor, .badge-face { position: absolute; inset: 0; width: 100%; height: 100%; transform-style: preserve-3d; }
+.badge-button:active { cursor: grabbing; scale: .985; }
+.badge-motion, .badge-rotor, .badge-face { position: absolute; inset: 0; width: 100%; height: 100%; }
+.badge-motion, .badge-rotor { transform-style: preserve-3d; }
 .badge-motion { opacity: 0; pointer-events: none; }
-.badge-front { transform: translateZ(3px); }
-.badge-back { transform: rotateY(180deg) translateZ(3px); }
+.badge-front { transform: translateZ(calc(var(--badge-depth) / 2)); }
+.badge-back { transform: rotateY(180deg) translateZ(calc(var(--badge-depth) / 2)); }
 .badge-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.badge-date { fill: #fff; filter: drop-shadow(0 1px 2px #291631); text-anchor: middle; font: 690 27px var(--mono); letter-spacing: -.07em; }
+.badge-edge {
+  position: absolute;
+  height: var(--badge-depth);
+  transform-origin: 0 0;
+  background: linear-gradient(#b6bcc8, var(--edge-tone) 18%, #353944 62%, #b6bcc8);
+}
+.badge-date, .medal-inscription, .medal-year { fill: #e8ebf3; text-anchor: middle; }
+.badge-date { font: 650 199px var(--mono); letter-spacing: -.075em; }
+.medal-inscription { font-size: 57px; font-weight: 630; letter-spacing: .13em; }
+.medal-year { font: 570 46px var(--mono); letter-spacing: .24em; }
+.badge-hint { margin-top: 7px; color: #aaa0ad; font-size: 11px; letter-spacing: .13em; }
 
 .event-copy { display: grid; justify-items: center; text-align: center; }
 .event-copy h2 { font-size: clamp(39px, 12vw, 57px); }
