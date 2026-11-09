@@ -45,7 +45,7 @@ function frame(now) {
     lastFrame = now;
     badge.shown += (badge.target - badge.shown) * (1 - Math.exp(-elapsed / 65));
     const moving = !drag && !reducedMotion.matches;
-    const yaw = badge.shown + (moving ? Math.sin(now / 1250) * 12 : 0);
+    const yaw = badge.shown + (moving ? Math.sin(now / 1550) * 15 : 0);
     const pitch = moving ? -4 + Math.cos(now / 1500) * 5 : 0;
     badgeRotor.style.transform = 'rotateX(' + pitch + 'deg) rotateY(' + yaw + 'deg)';
     medalRenderer?.render(pitch, yaw);
@@ -84,10 +84,9 @@ function buildMedalEdge() {
 async function prepareMedal() {
   if (medalPrepared || !window.DoudouMedal) return;
   medalPrepared = true;
-  const image = badgeRotor.querySelector('.badge-front');
   try {
-    await Promise.all([image.decode(), document.fonts.ready]);
-    medalRenderer = window.DoudouMedal.createMedal(badgeMotion, image, document.querySelector('#medal-outline'));
+    await document.fonts.ready;
+    medalRenderer = await window.DoudouMedal.createMedal(badgeMotion, document.querySelector('#medal-outline'));
     startFrames();
   } catch (error) {
     console.warn('The medal is using the CSS renderer.', error);
