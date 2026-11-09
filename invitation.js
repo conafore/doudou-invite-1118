@@ -17,8 +17,9 @@ const revealItems = [...document.querySelectorAll('.reveal')];
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const motion = window.anime;
 const badge = { angle: 0, target: 0, shown: 0 };
+const filmStart = 1.67;
 
-let drag, timer;
+let drag, timer, filmAlignment;
 let request = 0;
 let transitionId = 0;
 let lastFrame = 0;
@@ -58,8 +59,9 @@ function idle(focus = false) {
   clearTimeout(timer);
   transitionId += 1;
   if (stage.dataset.scene === 'finale') finale.scrollTop = 0;
+  filmAlignment?.cancel();
   film.pause();
-  if (film.readyState > 0) film.currentTime = 0;
+  film.currentTime = filmStart;
   delete stage.dataset.videoVisible;
   if (idleVideo.readyState > 0) idleVideo.currentTime = 0;
   scene('idle');
@@ -74,6 +76,56 @@ function idle(focus = false) {
     }, 720);
   }
   if (focus) openButton.focus({ preventScroll: true });
+}
+
+function doudouPosition(video, sample, fit) {
+  if (video.readyState < 2) return;
+  const { width, height } = sample.canvas;
+  sample.drawImage(video, 0, 0, width, height);
+  const pixels = sample.getImageData(0, 0, width, height).data;
+  let left = width, right = 0, top = height, bottom = 0;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const offset = (y * width + x) * 4;
+      const red = pixels[offset];
+      // Locate the coral fur while leaving the black stage and cool highlights out.
+      if (red < 100 || red < 1.45 * pixels[offset + 1] || red < 1.4 * pixels[offset + 2]) continue;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      top = Math.min(top, y);
+      bottom = Math.max(bottom, y);
+    }
+  }
+  if (right - left < width * .25 || bottom - top < height * .2) return;
+
+  const renderedScale = fit(video.clientWidth / video.videoWidth, video.clientHeight / video.videoHeight);
+  const renderedWidth = video.videoWidth * renderedScale;
+  const renderedHeight = video.videoHeight * renderedScale;
+  return {
+    x: ((left + right + 1) / (2 * width) - .5) * renderedWidth,
+    y: ((top + bottom + 1) / (2 * height) - .5) * renderedHeight,
+    width: (right - left + 1) / width * renderedWidth,
+  };
+}
+
+function alignFilmEntrance() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 72;
+  canvas.height = 128;
+  const sample = canvas.getContext('2d', { willReadFrequently: true });
+  if (!sample) return;
+
+  const from = doudouPosition(idleVideo, sample, Math.min);
+  const to = doudouPosition(film, sample, Math.max);
+  if (!from || !to) return;
+
+  const scale = from.width / to.width;
+  const x = from.x - to.x * scale;
+  const y = from.y - to.y * scale;
+  filmAlignment = film.animate([
+    { transform: `translate(${x}px, ${y}px) scale(${scale})` },
+    { transform: 'none' },
+  ], { duration: 480, easing: 'cubic-bezier(.22, .65, .35, 1)' });
 }
 
 function openInvitation() {
@@ -92,9 +144,10 @@ function openInvitation() {
 }
 
 film.addEventListener('playing', () => {
-  if (stage.dataset.scene !== 'film') return;
-  stage.dataset.videoVisible = '';
+  if (stage.dataset.scene !== 'film' || stage.hasAttribute('data-video-visible')) return;
+  alignFilmEntrance();
   idleVideo.pause();
+  stage.dataset.videoVisible = '';
 });
 film.addEventListener('ended', () => {
   if (stage.dataset.scene === 'film') showFinale(true);

@@ -63,7 +63,7 @@ button svg { pointer-events: none; }
 }
 .idle-screen:focus-visible { outline-offset: -6px; }
 .idle-screen video { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
-.film-wrap { z-index: 3; background: #030303; opacity: 0; transition: opacity .35s ease-out; pointer-events: none; }
+.film-wrap { z-index: 3; background: #030303; opacity: 0; transition: opacity .18s var(--ease); pointer-events: none; }
 .film-wrap video { display: block; width: 100%; height: 100%; object-fit: cover; }
 [data-video-visible] .film-wrap { opacity: 1; }
 [data-scene="finale"] .film-wrap { opacity: 0; transition-duration: .55s; }
