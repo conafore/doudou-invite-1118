@@ -20,6 +20,8 @@ const badge = { angle: 0, target: 0, shown: 0 };
 const filmStart = 1.67;
 
 let drag, timer, filmAlignment;
+let medalRenderer;
+let medalPrepared = false;
 let request = 0;
 let transitionId = 0;
 let lastFrame = 0;
@@ -46,6 +48,7 @@ function frame(now) {
     const yaw = badge.shown + (moving ? Math.sin(now / 1250) * 12 : 0);
     const pitch = moving ? -4 + Math.cos(now / 1500) * 5 : 0;
     badgeRotor.style.transform = 'rotateX(' + pitch + 'deg) rotateY(' + yaw + 'deg)';
+    medalRenderer?.render(pitch, yaw);
   }
   if (stage.dataset.scene === 'finale' &&
       (!reducedMotion.matches || Math.abs(badge.target - badge.shown) > .04)) startFrames();
@@ -76,6 +79,19 @@ function buildMedalEdge() {
     wall.append(segment);
   }
   badgeRotor.prepend(wall);
+}
+
+async function prepareMedal() {
+  if (medalPrepared || !window.DoudouMedal) return;
+  medalPrepared = true;
+  const image = badgeRotor.querySelector('.badge-front');
+  try {
+    await Promise.all([image.decode(), document.fonts.ready]);
+    medalRenderer = window.DoudouMedal.createMedal(badgeMotion, image, document.querySelector('#medal-outline'));
+    startFrames();
+  } catch (error) {
+    console.warn('The medal is using the CSS renderer.', error);
+  }
 }
 
 function idle(focus = false) {
@@ -191,6 +207,7 @@ function showFinale(focus) {
   badgeMotion.removeAttribute('style');
   revealItems.forEach(item => item.removeAttribute('style'));
   scene('finale');
+  prepareMedal();
   if (reducedMotion.matches || !motion) {
     badgeMotion.style.opacity = 1;
     revealItems.forEach(item => { item.style.opacity = 1; });
