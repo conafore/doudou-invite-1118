@@ -244,7 +244,7 @@ h1 { margin-top: 11px; }
   position: absolute;
   height: var(--badge-depth);
   transform-origin: 0 0;
-  background: linear-gradient(#b6bcc8, var(--edge-tone) 18%, #353944 62%, #b6bcc8);
+  background: var(--edge-tone);
 }
 .badge-date, .medal-inscription, .medal-year { fill: #e8ebf3; text-anchor: middle; }
 .badge-date { font: 650 199px var(--mono); letter-spacing: -.075em; }
