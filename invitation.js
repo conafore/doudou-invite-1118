@@ -5,6 +5,9 @@ const opening = document.querySelector('#opening');
 const openButton = document.querySelector('#open-button');
 const film = document.querySelector('#film');
 const filmControls = document.querySelector('#film-controls');
+const playbackMessage = document.querySelector('#playback-message');
+const playbackStatus = document.querySelector('#playback-status');
+const playFilmButton = document.querySelector('#play-film');
 const sound = document.querySelector('#sound');
 const skip = document.querySelector('#skip');
 const finale = document.querySelector('#finale');
@@ -13,19 +16,27 @@ const replay = document.querySelector('#replay');
 const badgeButton = document.querySelector('#badge-button');
 const badgeRotor = document.querySelector('#badge-rotor');
 const badgeMotion = document.querySelector('.badge-motion');
+const fallbackSweep = document.querySelector('#medal-sweep');
+const tiltButton = document.querySelector('#tilt');
+const tiltLabel = document.querySelector('#tilt-label');
+const tiltStatus = document.querySelector('#tilt-status');
 const revealItems = [...document.querySelectorAll('.reveal')];
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const motion = window.anime;
 const badge = { angle: 0, target: 0, shown: 0 };
 const filmStart = 1.67;
+const tiltSupported = window.isSecureContext && navigator.maxTouchPoints > 0 &&
+  typeof window.DeviceOrientationEvent === 'function';
+const tilt = { enabled: false, origin: null, pitch: 0, yaw: 0, shownPitch: 0, shownYaw: 0 };
 
-let drag, timer, filmAlignment;
+let drag, playbackTimer, filmAlignment, tiltTimer;
 let medalRenderer;
 let medalPrepared = false;
 let request = 0;
 let transitionId = 0;
 let lastFrame = 0;
 let clickAfterDrag = 0;
+let ambientLight = 0;
 
 function scene(next) {
   stage.dataset.scene = next;
@@ -34,8 +45,13 @@ function scene(next) {
   opening.inert = !idle;
   idleScreen.inert = !idle;
   filmControls.inert = next !== 'film';
+  playbackMessage.inert = true;
   finale.inert = !final;
   finale.setAttribute('aria-hidden', String(!final));
+  if (tilt.enabled) {
+    resetTilt();
+    if (final) listenForTilt();
+  }
 }
 
 function frame(now) {
@@ -44,14 +60,25 @@ function frame(now) {
     const elapsed = lastFrame ? Math.min(50, now - lastFrame) : 16;
     lastFrame = now;
     badge.shown += (badge.target - badge.shown) * (1 - Math.exp(-elapsed / 65));
-    const moving = !drag && !reducedMotion.matches;
-    const yaw = badge.shown + (moving ? Math.sin(now / 1550) * 15 : 0);
-    const pitch = moving ? -4 + Math.cos(now / 1500) * 5 : 0;
+    const tiltEase = 1 - Math.exp(-elapsed / 115);
+    tilt.shownYaw += (tilt.yaw - tilt.shownYaw) * tiltEase;
+    tilt.shownPitch += (tilt.pitch - tilt.shownPitch) * tiltEase;
+    const floating = !drag && !tilt.origin && !reducedMotion.matches;
+    const yaw = badge.shown + tilt.shownYaw + (floating ? Math.sin(now / 1550) * 13 : 0);
+    const pitch = tilt.shownPitch + (floating ? -4 + Math.cos(now / 1500) * 5 : 0);
+    const lightTarget = !drag && !reducedMotion.matches ? Math.sin(now / 1330) * .92 : 0;
+    ambientLight += (lightTarget - ambientLight) * tiltEase;
     badgeRotor.style.transform = 'rotateX(' + pitch + 'deg) rotateY(' + yaw + 'deg)';
-    medalRenderer?.render(pitch, yaw);
+    medalRenderer?.render(pitch, yaw, ambientLight);
+    if (!badgeMotion.classList.contains('has-real-medal')) {
+      const angle = yaw * Math.PI / 180;
+      const offset = (ambientLight + Math.sin(2 * angle)) * 630;
+      fallbackSweep.setAttribute('gradientTransform', `translate(${offset} 0)`);
+    }
   }
   if (stage.dataset.scene === 'finale' &&
-      (!reducedMotion.matches || Math.abs(badge.target - badge.shown) > .04)) startFrames();
+      (!reducedMotion.matches || Math.abs(badge.target - badge.shown) > .04 ||
+        Math.abs(tilt.yaw - tilt.shownYaw) > .04 || Math.abs(tilt.pitch - tilt.shownPitch) > .04)) startFrames();
 }
 
 function startFrames() {
@@ -93,19 +120,18 @@ async function prepareMedal() {
   }
 }
 
-function idle(focus = false) {
-  clearTimeout(timer);
+function idle() {
+  clearTimeout(playbackTimer);
   transitionId += 1;
-  if (stage.dataset.scene === 'finale') finale.scrollTop = 0;
   filmAlignment?.cancel();
   film.pause();
-  film.currentTime = filmStart;
+  delete stage.dataset.playback;
   delete stage.dataset.videoVisible;
   if (idleVideo.readyState > 0) idleVideo.currentTime = 0;
   scene('idle');
   if (reducedMotion.matches) idleVideo.pause();
   else idleVideo.play().catch(() => {});
-  if (reducedMotion.matches || focus) stage.dataset.prompt = '';
+  if (reducedMotion.matches) stage.dataset.prompt = '';
   else {
     delete stage.dataset.prompt;
     const id = transitionId;
@@ -113,7 +139,6 @@ function idle(focus = false) {
       if (id === transitionId) stage.dataset.prompt = '';
     }, 720);
   }
-  if (focus) openButton.focus({ preventScroll: true });
 }
 
 function doudouPosition(video, sample, fit) {
@@ -147,6 +172,7 @@ function doudouPosition(video, sample, fit) {
 }
 
 function alignFilmEntrance() {
+  if (reducedMotion.matches || typeof film.animate !== 'function') return;
   const canvas = document.createElement('canvas');
   canvas.width = 72;
   canvas.height = 128;
@@ -166,41 +192,89 @@ function alignFilmEntrance() {
   ], { duration: 480, easing: 'cubic-bezier(.22, .65, .35, 1)' });
 }
 
-function openInvitation() {
-  if (stage.dataset.scene !== 'idle') return;
-  if (reducedMotion.matches) {
-    showFinale(true);
-    return;
-  }
+function showPlaybackState(state, message = '') {
+  stage.dataset.playback = state;
+  playbackMessage.inert = state === 'playing';
+  playbackStatus.textContent = message;
+}
+
+function waitForFilm() {
+  clearTimeout(playbackTimer);
+  showPlaybackState('waiting', '正在加载影片');
+  playbackTimer = setTimeout(() => {
+    if (stage.dataset.scene === 'film') showPlaybackState('retry', '影片加载较慢');
+  }, 6500);
+}
+
+function retryPlayback() {
+  clearTimeout(playbackTimer);
+  showPlaybackState('retry', film.error ? '暂时无法加载影片' : '点一下继续播放影片');
+}
+
+function playFilm() {
+  if (stage.dataset.scene !== 'film') return;
   const id = ++transitionId;
-  scene('film');
-  skip.focus({ preventScroll: true });
-  timer = setTimeout(() => showFinale(true), 9500);
+  if (film.error) film.load();
+  // Safari requires the play request to come directly from the click.
+  // Preload, seek, and the entrance effect must not delay it.
   film.play().catch(() => {
-    if (id === transitionId) showFinale(true);
+    if (id === transitionId) retryPlayback();
   });
+  waitForFilm();
+}
+
+function openInvitation(event) {
+  const current = stage.dataset.scene;
+  if (current !== 'idle' && current !== 'finale') return;
+  if (current === 'finale') finale.scrollTop = 0;
+  filmAlignment?.cancel();
+  delete stage.dataset.videoVisible;
+  // Keep the matched entrance where the browser already has that range.
+  // A cold mobile load can start from frame zero immediately.
+  const start = film.seekable.length && film.seekable.start(0) <= filmStart &&
+    film.seekable.end(0) > filmStart ? filmStart : 0;
+  if (film.readyState > 0 && film.currentTime !== start) film.currentTime = start;
+  scene('film');
+  playFilm();
+  if (event.detail === 0) skip.focus({ preventScroll: true });
 }
 
 film.addEventListener('playing', () => {
-  if (stage.dataset.scene !== 'film' || stage.hasAttribute('data-video-visible')) return;
-  alignFilmEntrance();
+  if (stage.dataset.scene !== 'film') return;
+  clearTimeout(playbackTimer);
+  showPlaybackState('playing');
+  if (stage.hasAttribute('data-video-visible')) return;
+  // Canvas sampling is optional. Some mobile browsers restrict video readback.
+  try {
+    alignFilmEntrance();
+  } catch {
+    // The crossfade works without frame sampling.
+  }
   idleVideo.pause();
   stage.dataset.videoVisible = '';
+});
+film.addEventListener('waiting', () => {
+  if (stage.dataset.scene === 'film' && stage.dataset.playback !== 'retry') waitForFilm();
 });
 film.addEventListener('ended', () => {
   if (stage.dataset.scene === 'film') showFinale(true);
 });
 film.addEventListener('error', () => {
-  if (stage.dataset.scene === 'film') showFinale(true);
+  if (stage.dataset.scene === 'film') retryPlayback();
+});
+film.addEventListener('pause', () => {
+  if (stage.dataset.scene === 'film' && !film.ended && !film.seeking) retryPlayback();
 });
 
 function showFinale(focus) {
   if (stage.dataset.scene === 'finale') return;
-  clearTimeout(timer);
+  clearTimeout(playbackTimer);
   transitionId += 1;
   film.pause();
   idleVideo.pause();
+  delete stage.dataset.playback;
   badge.angle = badge.target = badge.shown = 0;
+  ambientLight = 0;
   badgeButton.setAttribute('aria-pressed', 'false');
   badgeRotor.style.transform = '';
   badgeMotion.removeAttribute('style');
@@ -236,6 +310,75 @@ function turnBadge(angle) {
   startFrames();
 }
 
+function resetTilt() {
+  clearTimeout(tiltTimer);
+  window.removeEventListener('deviceorientation', readTilt);
+  tilt.origin = null;
+  tilt.pitch = tilt.yaw = 0;
+}
+
+function readTilt({ beta, gamma }) {
+  if (!Number.isFinite(beta) || !Number.isFinite(gamma)) return;
+  const screenAngle = screen.orientation?.angle ?? window.orientation ?? 0;
+  if (!tilt.origin || tilt.origin.screenAngle !== screenAngle) {
+    clearTimeout(tiltTimer);
+    tilt.origin = { beta, gamma, screenAngle };
+    tiltStatus.textContent = '';
+  }
+
+  // Use the position at activation as neutral, then map tilt to the screen axes.
+  const forward = (beta - tilt.origin.beta + 540) % 360 - 180;
+  const sideways = gamma - tilt.origin.gamma;
+  const radians = screenAngle * Math.PI / 180;
+  const x = sideways * Math.cos(radians) + forward * Math.sin(radians);
+  const y = forward * Math.cos(radians) - sideways * Math.sin(radians);
+  tilt.yaw = Math.max(-16, Math.min(16, x * .67));
+  tilt.pitch = Math.max(-13, Math.min(13, y * .55));
+  startFrames();
+}
+
+function setTiltEnabled(enabled) {
+  tilt.enabled = enabled;
+  tiltButton.setAttribute('aria-pressed', String(enabled));
+  tiltLabel.textContent = enabled ? '关闭倾斜' : '开启倾斜';
+  tiltStatus.textContent = '';
+  resetTilt();
+  if (enabled && stage.dataset.scene === 'finale') listenForTilt();
+  startFrames();
+}
+
+function listenForTilt() {
+  window.addEventListener('deviceorientation', readTilt);
+  tiltTimer = setTimeout(() => {
+    if (tilt.origin) return;
+    setTiltEnabled(false);
+    tiltStatus.textContent = '未收到手机的倾斜信号';
+  }, 3500);
+}
+
+tiltButton.hidden = !tiltSupported;
+tiltButton.addEventListener('click', async () => {
+  if (tilt.enabled) {
+    setTiltEnabled(false);
+    return;
+  }
+  tiltButton.disabled = true;
+  tiltStatus.textContent = '';
+  try {
+    const orientation = window.DeviceOrientationEvent;
+    if (typeof orientation.requestPermission === 'function' &&
+        await orientation.requestPermission() !== 'granted') {
+      tiltStatus.textContent = '未获得动作与方向权限';
+      return;
+    }
+    setTiltEnabled(true);
+  } catch {
+    tiltStatus.textContent = '当前浏览器无法开启倾斜';
+  } finally {
+    tiltButton.disabled = false;
+  }
+});
+
 badgeButton.addEventListener('pointerdown', event => {
   if (!event.isPrimary || event.button !== 0) return;
   badgeButton.setPointerCapture(event.pointerId);
@@ -268,21 +411,30 @@ badgeButton.addEventListener('keydown', event => {
   turnBadge(badge.angle + (event.key === 'ArrowLeft' ? -30 : 30));
 });
 
-sound.addEventListener('click', () => {
-  film.muted = !film.muted;
+function updateSoundButton() {
   sound.setAttribute('aria-pressed', String(!film.muted));
   sound.setAttribute('aria-label', film.muted ? '开启声音' : '关闭声音');
+}
+
+sound.addEventListener('click', () => {
+  film.muted = !film.muted;
+  updateSoundButton();
+  if (film.paused && stage.dataset.playback === 'retry') playFilm();
 });
+film.addEventListener('volumechange', updateSoundButton);
+playFilmButton.addEventListener('click', playFilm);
 idleScreen.addEventListener('click', openInvitation);
 openButton.addEventListener('click', openInvitation);
 skip.addEventListener('click', () => showFinale(true));
-replay.addEventListener('click', () => idle(true));
+replay.addEventListener('click', openInvitation);
 
-reducedMotion.addEventListener('change', () => {
+function updateMotionPreference() {
   if (stage.dataset.scene === 'idle') idle();
-  else if (reducedMotion.matches && stage.dataset.scene === 'film') showFinale(true);
+  if (reducedMotion.matches) ambientLight = 0;
   startFrames();
-});
+}
+if (reducedMotion.addEventListener) reducedMotion.addEventListener('change', updateMotionPreference);
+else reducedMotion.addListener(updateMotionPreference);
 
 buildMedalEdge();
 idle();

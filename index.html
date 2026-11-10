@@ -9,17 +9,17 @@
   <title>灵感兜不住 · 结营答辩邀请函</title>
   <link rel="icon" href="assets/spark.svg" type="image/svg+xml">
   <link rel="preload" href="assets/doudou-idle.webp" as="image">
-  <link rel="stylesheet" href="style.css?v=20261109-edge-sweep">
+  <link rel="stylesheet" href="style.css?v=20261110-mobile">
   <script src="assets/vendor/anime.min.js" defer></script>
-  <script src="assets/medal-renderer.min.js?v=20261109-edge-sweep" defer></script>
-  <script src="invitation.js?v=20261109-edge-sweep" defer></script>
+  <script src="assets/medal-renderer.min.js?v=20261110-mobile" defer></script>
+  <script src="invitation.js?v=20261110-mobile" defer></script>
 </head>
 <body>
   <main class="invitation" id="invitation" data-scene="idle" aria-label="灵感兜不住 · 结营答辩邀请函">
     <div class="frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
     <div class="film-wrap" aria-hidden="true">
-      <video id="film" preload="auto" playsinline webkit-playsinline disablepictureinpicture muted src="assets/doudou-film.mp4"></video>
+      <video id="film" preload="auto" playsinline webkit-playsinline disablepictureinpicture src="assets/doudou-film.mp4"></video>
     </div>
 
     <button class="idle-screen" id="idle-screen" type="button" aria-label="点击兜兜，开启邀请函">
@@ -40,8 +40,12 @@
       </div>
     </div>
 
+    <div class="playback-message" id="playback-message" inert>
+      <p id="playback-status" role="status"></p>
+      <button type="button" class="quiet-button" id="play-film">继续播放</button>
+    </div>
     <div class="film-controls" id="film-controls" inert>
-      <button type="button" class="quiet-button" id="sound" aria-label="开启声音" aria-pressed="false">
+      <button type="button" class="quiet-button" id="sound" aria-label="关闭声音" aria-pressed="true">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path class="sound-off" d="m15 10 5 5m0-5-5 5"/><path class="sound-on" d="M15 9a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></svg>
       </button>
       <button type="button" class="quiet-button skip" id="skip">查看邀请</button>
@@ -53,12 +57,21 @@
           <button class="badge-button" id="badge-button" type="button" aria-label="翻转兜兜纪念徽章" aria-describedby="badge-hint" aria-pressed="false">
             <span class="badge-motion" aria-hidden="true">
               <span class="badge-rotor" id="badge-rotor">
-                <img class="badge-face badge-front" src="assets/doudou-medal-albedo.svg?v=20261109-edge-sweep" alt="" width="1254" height="1254" decoding="async" draggable="false">
+                <img class="badge-face badge-front" src="assets/doudou-medal-albedo.svg?v=20261110-mobile" alt="" width="1254" height="1254" decoding="async" draggable="false">
+                <svg class="badge-face badge-front" viewBox="0 0 1254 1254" aria-hidden="true">
+                  <use href="#medal-outline" fill="none" stroke="url(#medal-sweep)" stroke-width="17" stroke-linejoin="round"/>
+                </svg>
                 <svg class="badge-face badge-back" viewBox="0 0 1254 1254" aria-hidden="true">
                   <defs>
+                    <linearGradient id="medal-sweep" gradientUnits="userSpaceOnUse" x1="390" y1="540" x2="864" y2="700">
+                      <stop stop-color="#fff0e8" stop-opacity="0"/>
+                      <stop offset=".5" stop-color="#fff0e8" stop-opacity=".72"/>
+                      <stop offset="1" stop-color="#fff0e8" stop-opacity="0"/>
+                    </linearGradient>
                     <polygon id="medal-outline" points="622,17 584,19 548,34 136,281 105,304 87,324 72,352 63,389 63,885 68,909 80,933 116,969 518,1215 550,1231 573,1236 604,1235 633,1225 1016,997 1079,965 1192,927 1205,918 1212,904 1212,889 1190,823 1183,759 1172,745 1163,741 1131,742 1131,388 1126,355 1112,324 1089,297 1056,274 670,35"/>
                   </defs>
                   <use href="#medal-outline" transform="translate(1254 0) scale(-1 1)" fill="#c9bdb8" stroke="#d7cdca" stroke-width="5" stroke-linejoin="round"/>
+                  <use href="#medal-outline" transform="translate(1254 0) scale(-1 1)" fill="none" stroke="url(#medal-sweep)" stroke-width="28" stroke-linejoin="round"/>
                   <path id="medal-inset-outline" d="M655 77Q676 64 697 77L1099 315Q1144 341 1144 392V863Q1144 914 1098 941L697 1174Q675 1187 653 1174L254 938Q209 912 209 864V392Q209 342 254 315Z"
                         fill="#555b65" stroke="#777d88" stroke-width="5"/>
                   <path d="M676 264Q685 302 724 312Q685 322 676 360Q666 322 628 312Q666 302 676 264Z" fill="#dde1ea"/>
@@ -70,7 +83,14 @@
               </span>
             </span>
           </button>
-          <p class="badge-hint reveal" id="badge-hint">点击翻面 · 左右拖动</p>
+          <div class="badge-guide reveal">
+            <p class="badge-hint" id="badge-hint">点击翻面 · 左右拖动</p>
+            <button class="quiet-button tilt-button" id="tilt" type="button" aria-pressed="false" aria-describedby="tilt-status" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="4" width="8" height="16" rx="2" transform="rotate(-26 12 12)"/><path d="M4 13a8 8 0 0 1 2-6m14 4a8 8 0 0 1-2 6"/></svg>
+              <span id="tilt-label">开启倾斜</span>
+            </button>
+            <p class="tilt-status" id="tilt-status" role="status"></p>
+          </div>
         </div>
 
         <div class="event-copy">
