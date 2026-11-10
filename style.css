@@ -358,24 +358,44 @@ h1 { margin-top: 11px; }
   gap: 9px;
   min-height: 46px;
   padding: 0 18px;
-  border: 1px solid #ffffff39;
-  border-top-color: #fff7;
+  border: 1px solid #ffe1ef40;
+  border-top-color: #fff3faa6;
+  border-left-color: #ffe9f36b;
   border-radius: 80px;
-  box-shadow: 0 3px 15px #0007, inset 0 1px 2px #ffffff24;
-  background: linear-gradient(150deg, #332a38, #1a151e);
-  color: #f8f1fa;
+  background:
+    radial-gradient(ellipse 90% 115% at 14% -42%, #fff4fa4a, transparent 77%),
+    linear-gradient(168deg, #fff4fa13 10%, #fff4fa06 51%, #36001947 100%),
+    #2a031d26;
+  background-clip: padding-box;
+  -webkit-backdrop-filter: blur(9px) saturate(132%);
+  backdrop-filter: blur(9px) saturate(132%);
+  box-shadow: 0 5px 16px #1b001e45, inset 0 1px 1px #fff7fb50, inset 0 -2px 4px #ffa3cf2e;
+  color: #fff7fb;
   font-size: 14px;
   font-weight: 630;
   text-decoration: none;
+  text-shadow: 0 1px 4px #3d052eb0;
   touch-action: manipulation;
   transition: scale .25s var(--ease), border-color .25s, box-shadow .25s;
   -webkit-tap-highlight-color: transparent;
+}
+.calendar-link::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 #fff1f745, inset 0 -1px 0 #ffc5df38;
 }
 .calendar-link svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.55; stroke-linecap: round; stroke-linejoin: round; }
 .calendar-arrow { opacity: .68; transition: translate .24s var(--ease); }
 .calendar-link:active { scale: .96; }
 @media (hover: hover) and (pointer: fine) {
-  .calendar-link:hover { scale: 1.035; border-color: #f1d7f477; box-shadow: 0 5px 18px #0008, inset 0 1px 4px #ffffff25; }
+  .calendar-link:hover {
+    scale: 1.035;
+    border-color: #fff1f68c;
+    box-shadow: 0 6px 18px #1b001e55, inset 0 1px 2px #fff7fb62, inset 0 -2px 4px #ffa3cf44;
+  }
   .calendar-link:hover .calendar-arrow { translate: 2px -2px; }
   .replay:hover { border-color: transparent; background: #ffffff12; }
 }
