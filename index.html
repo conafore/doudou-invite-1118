@@ -9,10 +9,10 @@
   <title>灵感兜不住 · 结营答辩邀请函</title>
   <link rel="icon" href="assets/spark.svg" type="image/svg+xml">
   <link rel="preload" href="assets/doudou-idle.webp" as="image">
-  <link rel="stylesheet" href="style.css?v=20261110-mobile">
+  <link rel="stylesheet" href="style.css?v=20261110-glow">
   <script src="assets/vendor/anime.min.js" defer></script>
-  <script src="assets/medal-renderer.min.js?v=20261110-mobile" defer></script>
-  <script src="invitation.js?v=20261110-mobile" defer></script>
+  <script src="assets/medal-renderer.min.js?v=20261110-glow" defer></script>
+  <script src="invitation.js?v=20261110-glow" defer></script>
 </head>
 <body>
   <main class="invitation" id="invitation" data-scene="idle" aria-label="灵感兜不住 · 结营答辩邀请函">
@@ -51,13 +51,14 @@
       <button type="button" class="quiet-button skip" id="skip">查看邀请</button>
     </div>
 
+    <div class="finale-atmosphere" aria-hidden="true"></div>
     <section class="finale" id="finale" inert aria-hidden="true" aria-label="活动信息">
       <div class="final-body">
         <div class="award-section">
           <button class="badge-button" id="badge-button" type="button" aria-label="翻转兜兜纪念徽章" aria-describedby="badge-hint" aria-pressed="false">
             <span class="badge-motion" aria-hidden="true">
               <span class="badge-rotor" id="badge-rotor">
-                <img class="badge-face badge-front" src="assets/doudou-medal-albedo.svg?v=20261110-mobile" alt="" width="1254" height="1254" decoding="async" draggable="false">
+                <img class="badge-face badge-front" src="assets/doudou-medal-albedo.svg?v=20261110-glow" alt="" width="1254" height="1254" decoding="async" draggable="false">
                 <svg class="badge-face badge-front" viewBox="0 0 1254 1254" aria-hidden="true">
                   <use href="#medal-outline" fill="none" stroke="url(#medal-sweep)" stroke-width="17" stroke-linejoin="round"/>
                 </svg>
@@ -83,14 +84,7 @@
               </span>
             </span>
           </button>
-          <div class="badge-guide reveal">
-            <p class="badge-hint" id="badge-hint">点击翻面 · 左右拖动</p>
-            <button class="quiet-button tilt-button" id="tilt" type="button" aria-pressed="false" aria-describedby="tilt-status" hidden>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="4" width="8" height="16" rx="2" transform="rotate(-26 12 12)"/><path d="M4 13a8 8 0 0 1 2-6m14 4a8 8 0 0 1-2 6"/></svg>
-              <span id="tilt-label">开启倾斜</span>
-            </button>
-            <p class="tilt-status" id="tilt-status" role="status"></p>
-          </div>
+          <p class="badge-hint reveal" id="badge-hint">点击翻面 · 拖动旋转</p>
         </div>
 
         <div class="event-copy">

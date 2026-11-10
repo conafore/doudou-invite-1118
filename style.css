@@ -233,21 +233,58 @@ h1 { margin-top: 11px; }
   .quiet-button:hover { transform: scale(1.04); border-color: #ffffff6b; background: #28242c; }
 }
 
-.finale {
+.finale-atmosphere, .finale {
   z-index: 4;
-  display: flex;
-  flex-direction: column;
-  padding: var(--top) var(--pad) var(--bottom);
-  background: radial-gradient(ellipse at 50% 29%, #211722 0%, #0c090d 42%, #080709 75%);
-  color: #f6f1f5;
   opacity: 0;
   visibility: hidden;
   transition: opacity .53s var(--ease), visibility 0s .53s;
+}
+[data-scene="finale"] :is(.finale-atmosphere, .finale) { opacity: 1; visibility: visible; transition-delay: 0s; }
+
+.finale-atmosphere {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 29%, #211722 0%, #0c090d 42%, #080709 75%);
+}
+.finale-atmosphere::before, .finale-atmosphere::after {
+  content: "";
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  height: 48%;
+  bottom: -8%;
+  transform-origin: 50% 100%;
+}
+.finale-atmosphere::before {
+  background: radial-gradient(ellipse 52% 87% at 48% 97%, #ff005c 0%, #cf004a 24%, #81003378 50%, transparent 79%);
+  opacity: .24;
+}
+.finale-atmosphere::after {
+  background: radial-gradient(ellipse 43% 67% at 61% 97%, #ff679a 0%, #ff005c80 31%, transparent 79%);
+  opacity: .12;
+}
+[data-scene="finale"] .finale-atmosphere::before { animation: floor-glow 13s ease-in-out infinite alternate; }
+[data-scene="finale"] .finale-atmosphere::after { animation: floor-reflection 17s ease-in-out infinite alternate; }
+@keyframes floor-glow {
+  from { transform: translate3d(-8%, 4%, 0) scaleY(.92); opacity: .16; }
+  to { transform: translate3d(8%, -4%, 0) scaleY(1.12); opacity: .28; }
+}
+@keyframes floor-reflection {
+  from { transform: translate3d(10%, -3%, 0); opacity: .14; }
+  to { transform: translate3d(-12%, 4%, 0); opacity: .07; }
+}
+
+.finale {
+  display: flex;
+  flex-direction: column;
+  padding: var(--top) var(--pad) var(--bottom);
+  color: #f6f1f5;
   overflow: auto;
   overscroll-behavior-y: contain;
   scrollbar-width: thin;
 }
-[data-scene="finale"] .finale { opacity: 1; visibility: visible; transition-delay: 0s; }
 .final-body { display: grid; align-content: center; flex: 1 0 auto; gap: clamp(12px, calc(2.5 * var(--screen-unit)), 24px); }
 .award-section { display: grid; justify-items: center; }
 .badge-button {
@@ -286,13 +323,7 @@ h1 { margin-top: 11px; }
 .badge-date { font: 650 199px var(--mono); letter-spacing: -.075em; }
 .medal-inscription { font-size: 57px; font-weight: 630; letter-spacing: .13em; }
 .medal-year { font: 570 46px var(--mono); letter-spacing: .24em; }
-.badge-guide { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; column-gap: 10px; }
 .badge-hint { padding-block: 7px; color: #bfb4c3; font-size: 11px; letter-spacing: .09em; }
-.tilt-button { min-height: 44px; padding-inline: 9px; border-color: transparent; background: transparent; color: #e4dbe8; }
-.tilt-button[hidden] { display: none; }
-.tilt-button[aria-pressed="true"] { color: #fff5ff; background: #fff1ff16; border-color: #fff1ff40; }
-.tilt-status { flex-basis: 100%; text-align: center; color: #c9becd; font-size: 11px; }
-.tilt-status:empty { margin: 0; height: 0; }
 
 .event-copy { display: grid; justify-items: center; text-align: center; }
 .event-copy h2 { font-size: clamp(39px, 12vw, 57px); }
@@ -372,7 +403,18 @@ h1 { margin-top: 11px; }
   h1 { font-size: 34px; }
   .open-button { min-height: 44px; }
 }
+@media (max-height: 540px) and (orientation: landscape) {
+  .invitation {
+    --top: max(14px, calc(env(safe-area-inset-top, 0px) + 8px));
+    --bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 8px));
+  }
+  .opening-copy { top: var(--top); }
+  .film-wrap video { object-fit: contain; }
+  .playback-message { top: 57%; }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001s !important; transition-duration: .001s !important; transition-delay: 0s !important; }
   .prompt-rings { display: none; }
+  [data-scene="finale"] .finale-atmosphere::before,
+  [data-scene="finale"] .finale-atmosphere::after { animation: none; }
 }

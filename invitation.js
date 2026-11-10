@@ -17,19 +17,12 @@ const badgeButton = document.querySelector('#badge-button');
 const badgeRotor = document.querySelector('#badge-rotor');
 const badgeMotion = document.querySelector('.badge-motion');
 const fallbackSweep = document.querySelector('#medal-sweep');
-const tiltButton = document.querySelector('#tilt');
-const tiltLabel = document.querySelector('#tilt-label');
-const tiltStatus = document.querySelector('#tilt-status');
 const revealItems = [...document.querySelectorAll('.reveal')];
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const motion = window.anime;
 const badge = { angle: 0, target: 0, shown: 0 };
 const filmStart = 1.67;
-const tiltSupported = window.isSecureContext && navigator.maxTouchPoints > 0 &&
-  typeof window.DeviceOrientationEvent === 'function';
-const tilt = { enabled: false, origin: null, pitch: 0, yaw: 0, shownPitch: 0, shownYaw: 0 };
-
-let drag, playbackTimer, filmAlignment, tiltTimer;
+let drag, playbackTimer, filmAlignment;
 let medalRenderer;
 let medalPrepared = false;
 let request = 0;
@@ -48,10 +41,6 @@ function scene(next) {
   playbackMessage.inert = true;
   finale.inert = !final;
   finale.setAttribute('aria-hidden', String(!final));
-  if (tilt.enabled) {
-    resetTilt();
-    if (final) listenForTilt();
-  }
 }
 
 function frame(now) {
@@ -60,14 +49,11 @@ function frame(now) {
     const elapsed = lastFrame ? Math.min(50, now - lastFrame) : 16;
     lastFrame = now;
     badge.shown += (badge.target - badge.shown) * (1 - Math.exp(-elapsed / 65));
-    const tiltEase = 1 - Math.exp(-elapsed / 115);
-    tilt.shownYaw += (tilt.yaw - tilt.shownYaw) * tiltEase;
-    tilt.shownPitch += (tilt.pitch - tilt.shownPitch) * tiltEase;
-    const floating = !drag && !tilt.origin && !reducedMotion.matches;
-    const yaw = badge.shown + tilt.shownYaw + (floating ? Math.sin(now / 1550) * 13 : 0);
-    const pitch = tilt.shownPitch + (floating ? -4 + Math.cos(now / 1500) * 5 : 0);
-    const lightTarget = !drag && !reducedMotion.matches ? Math.sin(now / 1330) * .92 : 0;
-    ambientLight += (lightTarget - ambientLight) * tiltEase;
+    const floating = !drag && !reducedMotion.matches;
+    const yaw = badge.shown + (floating ? Math.sin(now / 1550) * 13 : 0);
+    const pitch = floating ? -4 + Math.cos(now / 1500) * 5 : 0;
+    const lightTarget = floating ? Math.sin(now / 1330) * .92 : 0;
+    ambientLight += (lightTarget - ambientLight) * (1 - Math.exp(-elapsed / 115));
     badgeRotor.style.transform = 'rotateX(' + pitch + 'deg) rotateY(' + yaw + 'deg)';
     medalRenderer?.render(pitch, yaw, ambientLight);
     if (!badgeMotion.classList.contains('has-real-medal')) {
@@ -77,8 +63,7 @@ function frame(now) {
     }
   }
   if (stage.dataset.scene === 'finale' &&
-      (!reducedMotion.matches || Math.abs(badge.target - badge.shown) > .04 ||
-        Math.abs(tilt.yaw - tilt.shownYaw) > .04 || Math.abs(tilt.pitch - tilt.shownPitch) > .04)) startFrames();
+      (!reducedMotion.matches || Math.abs(badge.target - badge.shown) > .04)) startFrames();
 }
 
 function startFrames() {
@@ -180,7 +165,8 @@ function alignFilmEntrance() {
   if (!sample) return;
 
   const from = doudouPosition(idleVideo, sample, Math.min);
-  const to = doudouPosition(film, sample, Math.max);
+  const filmFit = getComputedStyle(film).objectFit === 'contain' ? Math.min : Math.max;
+  const to = doudouPosition(film, sample, filmFit);
   if (!from || !to) return;
 
   const scale = from.width / to.width;
@@ -310,75 +296,6 @@ function turnBadge(angle) {
   startFrames();
 }
 
-function resetTilt() {
-  clearTimeout(tiltTimer);
-  window.removeEventListener('deviceorientation', readTilt);
-  tilt.origin = null;
-  tilt.pitch = tilt.yaw = 0;
-}
-
-function readTilt({ beta, gamma }) {
-  if (!Number.isFinite(beta) || !Number.isFinite(gamma)) return;
-  const screenAngle = screen.orientation?.angle ?? window.orientation ?? 0;
-  if (!tilt.origin || tilt.origin.screenAngle !== screenAngle) {
-    clearTimeout(tiltTimer);
-    tilt.origin = { beta, gamma, screenAngle };
-    tiltStatus.textContent = '';
-  }
-
-  // Use the position at activation as neutral, then map tilt to the screen axes.
-  const forward = (beta - tilt.origin.beta + 540) % 360 - 180;
-  const sideways = gamma - tilt.origin.gamma;
-  const radians = screenAngle * Math.PI / 180;
-  const x = sideways * Math.cos(radians) + forward * Math.sin(radians);
-  const y = forward * Math.cos(radians) - sideways * Math.sin(radians);
-  tilt.yaw = Math.max(-16, Math.min(16, x * .67));
-  tilt.pitch = Math.max(-13, Math.min(13, y * .55));
-  startFrames();
-}
-
-function setTiltEnabled(enabled) {
-  tilt.enabled = enabled;
-  tiltButton.setAttribute('aria-pressed', String(enabled));
-  tiltLabel.textContent = enabled ? '关闭倾斜' : '开启倾斜';
-  tiltStatus.textContent = '';
-  resetTilt();
-  if (enabled && stage.dataset.scene === 'finale') listenForTilt();
-  startFrames();
-}
-
-function listenForTilt() {
-  window.addEventListener('deviceorientation', readTilt);
-  tiltTimer = setTimeout(() => {
-    if (tilt.origin) return;
-    setTiltEnabled(false);
-    tiltStatus.textContent = '未收到手机的倾斜信号';
-  }, 3500);
-}
-
-tiltButton.hidden = !tiltSupported;
-tiltButton.addEventListener('click', async () => {
-  if (tilt.enabled) {
-    setTiltEnabled(false);
-    return;
-  }
-  tiltButton.disabled = true;
-  tiltStatus.textContent = '';
-  try {
-    const orientation = window.DeviceOrientationEvent;
-    if (typeof orientation.requestPermission === 'function' &&
-        await orientation.requestPermission() !== 'granted') {
-      tiltStatus.textContent = '未获得动作与方向权限';
-      return;
-    }
-    setTiltEnabled(true);
-  } catch {
-    tiltStatus.textContent = '当前浏览器无法开启倾斜';
-  } finally {
-    tiltButton.disabled = false;
-  }
-});
-
 badgeButton.addEventListener('pointerdown', event => {
   if (!event.isPrimary || event.button !== 0) return;
   badgeButton.setPointerCapture(event.pointerId);
@@ -404,11 +321,6 @@ badgeButton.addEventListener('pointercancel', releaseBadge);
 badgeButton.addEventListener('click', event => {
   if (event.detail && performance.now() < clickAfterDrag) return;
   turnBadge((Math.round(badge.angle / 180) + 1) * 180);
-});
-badgeButton.addEventListener('keydown', event => {
-  if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
-  event.preventDefault();
-  turnBadge(badge.angle + (event.key === 'ArrowLeft' ? -30 : 30));
 });
 
 function updateSoundButton() {
