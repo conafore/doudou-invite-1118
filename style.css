@@ -246,34 +246,36 @@ h1 { margin-top: 11px; }
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-  background: radial-gradient(ellipse at 50% 29%, #211722 0%, #0c090d 42%, #080709 75%);
+  background:
+    linear-gradient(to top, #a0003970 0%, #68002b54 14%, #36001938 30%, transparent 58%),
+    radial-gradient(ellipse at 50% 29%, #211722 0%, #0c090d 42%, #080709 75%);
 }
 .finale-atmosphere::before, .finale-atmosphere::after {
   content: "";
   position: absolute;
   left: -25%;
   width: 150%;
-  height: 48%;
-  bottom: -8%;
+  height: 70%;
+  bottom: -10%;
   transform-origin: 50% 100%;
 }
 .finale-atmosphere::before {
-  background: radial-gradient(ellipse 52% 87% at 48% 97%, #ff005c 0%, #cf004a 24%, #81003378 50%, transparent 79%);
-  opacity: .24;
+  background: radial-gradient(ellipse 56% 94% at 48% 97%, #ff005c 0%, #e60056 23%, #a5004699 49%, #51002c38 69%, transparent 87%);
+  opacity: .49;
 }
 .finale-atmosphere::after {
-  background: radial-gradient(ellipse 43% 67% at 61% 97%, #ff679a 0%, #ff005c80 31%, transparent 79%);
-  opacity: .12;
+  background: radial-gradient(ellipse 43% 69% at 61% 97%, #ff83ad 0%, #ff005ca8 31%, transparent 81%);
+  opacity: .22;
 }
 [data-scene="finale"] .finale-atmosphere::before { animation: floor-glow 13s ease-in-out infinite alternate; }
 [data-scene="finale"] .finale-atmosphere::after { animation: floor-reflection 17s ease-in-out infinite alternate; }
 @keyframes floor-glow {
-  from { transform: translate3d(-8%, 4%, 0) scaleY(.92); opacity: .16; }
-  to { transform: translate3d(8%, -4%, 0) scaleY(1.12); opacity: .28; }
+  from { transform: translate3d(-8%, 4%, 0) scaleY(.92); opacity: .42; }
+  to { transform: translate3d(8%, -4%, 0) scaleY(1.12); opacity: .56; }
 }
 @keyframes floor-reflection {
-  from { transform: translate3d(10%, -3%, 0); opacity: .14; }
-  to { transform: translate3d(-12%, 4%, 0); opacity: .07; }
+  from { transform: translate3d(10%, -3%, 0); opacity: .26; }
+  to { transform: translate3d(-12%, 4%, 0); opacity: .16; }
 }
 
 .finale {
