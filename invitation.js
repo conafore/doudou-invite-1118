@@ -98,8 +98,7 @@ async function prepareMedal() {
   medalPrepared = true;
   try {
     await document.fonts.ready;
-    const date = document.querySelector('.badge-date').textContent;
-    medalRenderer = await window.DoudouMedal.createMedal(badgeMotion, document.querySelector('#medal-outline'), date);
+    medalRenderer = await window.DoudouMedal.createMedal(badgeMotion, document.querySelector('#medal-outline'));
     startFrames();
   } catch (error) {
     console.warn('The medal is using the CSS renderer.', error);

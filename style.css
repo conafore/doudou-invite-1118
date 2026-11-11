@@ -2,7 +2,6 @@
   color-scheme: dark;
   --ink: #f3f4ed;
   --ease: cubic-bezier(.22, 1, .36, 1);
-  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
   background: #131514;
   color: var(--ink);
@@ -311,7 +310,7 @@ h1 img, h2 img {
 .finale {
   display: flex;
   flex-direction: column;
-  padding: var(--top) var(--pad) var(--bottom);
+  padding: var(--top) var(--pad) max(12px, env(safe-area-inset-bottom, 0px));
   color: #f6f1f5;
   overflow: auto;
   overscroll-behavior-y: contain;
@@ -353,15 +352,12 @@ h1 img, h2 img {
   transform-origin: 0 0;
   background: var(--edge-tone);
 }
-.badge-date, .medal-inscription, .medal-year { fill: #e8ebf3; text-anchor: middle; }
-.badge-date { font: 650 199px var(--mono); letter-spacing: -.075em; }
-.medal-inscription { font-size: 57px; font-weight: 630; letter-spacing: .13em; }
-.medal-year { font: 570 46px var(--mono); letter-spacing: .24em; }
 .badge-hint { padding-block: 7px; color: #bfb4c3; font-size: 11px; letter-spacing: .09em; }
+.badge-hint .type-glyph { opacity: .5; }
 
 .event-copy { display: grid; justify-items: center; text-align: center; }
 .event-copy h2 img { width: clamp(108px, 34vw, 150px); }
-.organizers { margin-top: clamp(12px, 2.1vh, 20px); color: #fff0e2; font-size: clamp(15px, 4.35vw, 20px); font-weight: 600; line-height: 1.45; }
+.organizers { margin-top: clamp(12px, 2.1vh, 20px); color: var(--champagne); font-size: clamp(15px, 4.35vw, 20px); font-weight: 600; line-height: 1.45; }
 .event-date { text-align: center; }
 .event-date time { display: grid; justify-items: center; gap: 3px; color: var(--champagne); font-variant-numeric: tabular-nums; }
 .date-numbers { font-size: clamp(15px, 4.15vw, 19px); font-weight: 600; }
