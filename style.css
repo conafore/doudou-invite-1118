@@ -294,7 +294,7 @@ h1 img, h2 img {
   overflow: hidden;
   pointer-events: none;
   background:
-    linear-gradient(to top, #a0003970 0%, #68002b54 14%, #36001938 30%, transparent 58%),
+    linear-gradient(to top, #8b00345e 0%, #65002645 14%, #36001929 31%, transparent 56%),
     radial-gradient(ellipse at 50% 29%, #211722 0%, #0c090d 42%, #080709 75%);
 }
 .finale-atmosphere::before, .finale-atmosphere::after {
@@ -307,22 +307,30 @@ h1 img, h2 img {
   transform-origin: 50% 100%;
 }
 .finale-atmosphere::before {
-  background: radial-gradient(ellipse 56% 94% at 48% 97%, #ff005c 0%, #e60056 23%, #a5004699 49%, #51002c38 69%, transparent 87%);
+  background: radial-gradient(ellipse 57% 93% at 50% 97%, #ff005c 0%, #e00053 22%, #aa004799 48%, #51002c36 68%, transparent 88%);
   opacity: .49;
+  animation: floor-breathe 8.6s ease-in-out -1.2s infinite paused;
 }
 .finale-atmosphere::after {
-  background: radial-gradient(ellipse 43% 69% at 61% 97%, #ff83ad 0%, #ff005ca8 31%, transparent 81%);
-  opacity: .22;
+  height: 59%;
+  bottom: -13%;
+  background: radial-gradient(ellipse 49% 37% at 50% 79%, #ff83adbb 0%, #ff2b79a0 24%, #e4005860 50%, transparent 92%);
+  transform: rotate(-16deg);
+  opacity: .18;
+  animation: floor-sweep 11.8s ease-in-out -2.6s infinite paused;
 }
-[data-scene="finale"] .finale-atmosphere::before { animation: floor-glow 13s ease-in-out infinite alternate; }
-[data-scene="finale"] .finale-atmosphere::after { animation: floor-reflection 17s ease-in-out infinite alternate; }
-@keyframes floor-glow {
-  from { transform: translate3d(-8%, 4%, 0) scaleY(.92); opacity: .42; }
-  to { transform: translate3d(8%, -4%, 0) scaleY(1.12); opacity: .56; }
+[data-scene="finale"] .finale-atmosphere::before,
+[data-scene="finale"] .finale-atmosphere::after { animation-play-state: running; }
+@keyframes floor-breathe {
+  0%, 100% { transform: translate3d(-3%, 5%, 0) scale(1, .88); opacity: .30; }
+  53% { transform: translate3d(3%, -4%, 0) scale(1.08, 1.12); opacity: .72; }
 }
-@keyframes floor-reflection {
-  from { transform: translate3d(10%, -3%, 0); opacity: .26; }
-  to { transform: translate3d(-12%, 4%, 0); opacity: .16; }
+@keyframes floor-sweep {
+  0% { transform: translate3d(-29%, 6%, 0) rotate(-16deg) scaleX(.83); opacity: 0; }
+  25% { opacity: .22; }
+  52% { opacity: .41; }
+  78% { opacity: .17; }
+  100% { transform: translate3d(30%, -8%, 0) rotate(-16deg) scaleX(1.05); opacity: 0; }
 }
 
 .finale {
