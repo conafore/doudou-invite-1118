@@ -171,9 +171,15 @@ function alignFilmEntrance() {
   const to = doudouPosition(film, sample, filmFit);
   if (!from || !to) return;
 
-  const scale = from.width / to.width;
-  const x = from.x - to.x * scale;
-  const y = from.y - to.y * scale;
+  // Include the opening video's current drift and scale in the match.
+  const openingBox = idleVideo.getBoundingClientRect();
+  const filmBox = film.getBoundingClientRect();
+  const openingScale = openingBox.width / idleVideo.clientWidth;
+  const scale = from.width * openingScale / to.width;
+  const x = openingBox.left + openingBox.width / 2 - (filmBox.left + filmBox.width / 2)
+    + from.x * openingScale - to.x * scale;
+  const y = openingBox.top + openingBox.height / 2 - (filmBox.top + filmBox.height / 2)
+    + from.y * openingScale - to.y * scale;
   filmAlignment = film.animate([
     { transform: `translate(${x}px, ${y}px) scale(${scale})` },
     { transform: 'none' },

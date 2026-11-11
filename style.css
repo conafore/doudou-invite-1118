@@ -75,7 +75,25 @@ button svg { pointer-events: none; }
 [data-scene="idle"] .idle-screen,
 [data-scene="film"][data-from-opening] .idle-screen { visibility: visible; }
 .idle-screen:focus-visible { outline-offset: -6px; }
-.idle-screen video { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.idle-drift, .idle-screen video { display: block; width: 100%; height: 100%; pointer-events: none; }
+.idle-drift { animation: idle-sway 8.4s ease-in-out -3.2s infinite alternate paused; }
+.idle-screen video {
+  object-fit: contain;
+  transform: scale(.86);
+  animation: idle-bob 6.1s ease-in-out -1.8s infinite alternate paused;
+}
+[data-scene="idle"] :is(.idle-drift, #idle-video),
+[data-scene="film"][data-from-opening]:not([data-video-visible]) :is(.idle-drift, #idle-video) {
+  animation-play-state: running;
+}
+@keyframes idle-sway {
+  from { transform: translateX(-5%); }
+  to { transform: translateX(5%); }
+}
+@keyframes idle-bob {
+  from { transform: translateY(-3.6%) scale(.84); }
+  to { transform: translateY(3.2%) scale(.88); }
+}
 .film-wrap { z-index: 3; background: #030303; opacity: 0; transition: opacity .18s var(--ease); pointer-events: none; }
 .film-wrap video { display: block; width: 100%; height: 100%; object-fit: cover; }
 [data-video-visible] .film-wrap { opacity: 1; }
@@ -465,6 +483,7 @@ h1 img, h2 img {
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001s !important; transition-duration: .001s !important; transition-delay: 0s !important; }
+  .idle-drift, .idle-screen video { animation: none; }
   .prompt-rings { display: none; }
   [data-scene="finale"] .finale-atmosphere::before,
   [data-scene="finale"] .finale-atmosphere::after { animation: none; }

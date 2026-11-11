@@ -9,10 +9,10 @@
   <title>灵感兜不住 · 终轮答辩邀请函</title>
   <link rel="icon" href="assets/spark.svg" type="image/svg+xml">
   <link rel="preload" href="assets/doudou-idle.webp" as="image">
-  <link rel="stylesheet" href="style.css?v=20261111-tilt5">
+  <link rel="stylesheet" href="style.css?v=20261111-float">
   <script src="assets/vendor/anime.min.js" defer></script>
   <script src="assets/medal-renderer.min.js?v=20261111-metal-note" defer></script>
-  <script src="invitation.js?v=20261111-satin" defer></script>
+  <script src="invitation.js?v=20261111-float" defer></script>
 </head>
 <body>
   <main class="invitation" id="invitation" data-scene="idle" aria-label="灵感兜不住 · 终轮答辩邀请函">
@@ -23,8 +23,10 @@
     </div>
 
     <button class="idle-screen" id="idle-screen" type="button" aria-label="点击兜兜，开启邀请函">
-      <video id="idle-video" preload="auto" playsinline webkit-playsinline muted loop
-             disablepictureinpicture poster="assets/doudou-idle.webp" src="assets/doudou-idle.mp4" aria-hidden="true"></video>
+      <span class="idle-drift">
+        <video id="idle-video" preload="auto" playsinline webkit-playsinline muted loop
+               disablepictureinpicture poster="assets/doudou-idle.webp" src="assets/doudou-idle.mp4" aria-hidden="true"></video>
+      </span>
     </button>
 
     <div class="opening" id="opening">
