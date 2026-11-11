@@ -99,7 +99,7 @@ h1 img, h2 img {
   max-width: 100%;
   height: auto;
   margin-inline: auto;
-  transform: skewX(-10deg);
+  transform: skewX(-5deg);
 }
 .opening-copy h1 img { width: clamp(215px, 72vw, 338px); }
 .opening-logo {
