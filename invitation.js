@@ -75,11 +75,12 @@ function startFrames() {
 function buildMedalEdge() {
   const outline = document.querySelector('#medal-outline');
   const { width, height } = outline.ownerSVGElement.viewBox.baseVal;
-  const points = outline.points;
+  const length = outline.getTotalLength();
+  const segments = Math.ceil(length / 34);
   const wall = document.createDocumentFragment();
-  for (let i = 0; i < points.numberOfItems; i++) {
-    const a = points.getItem(i);
-    const b = points.getItem((i + 1) % points.numberOfItems);
+  let a = outline.getPointAtLength(0);
+  for (let i = 1; i <= segments; i++) {
+    const b = outline.getPointAtLength(length * i / segments);
     const dx = b.x - a.x;
     const dy = b.y - a.y;
     const angle = Math.atan2(dy, dx);
@@ -89,8 +90,9 @@ function buildMedalEdge() {
     segment.style.top = `${100 * a.y / height}%`;
     segment.style.width = `calc(${100 * Math.hypot(dx, dy) / width}% + .35px)`;
     segment.style.transform = `rotate(${angle}rad) rotateX(90deg) translateY(calc(var(--badge-depth) / -2))`;
-    segment.style.setProperty('--edge-tone', `hsl(18 12% ${61 + 22 * Math.sin(angle - .8)}%)`);
+    segment.style.setProperty('--edge-tone', `hsl(29 29% ${61 + 22 * Math.sin(angle - .8)}%)`);
     wall.append(segment);
+    a = b;
   }
   badgeRotor.prepend(wall);
 }
