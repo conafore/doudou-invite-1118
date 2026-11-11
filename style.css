@@ -336,7 +336,7 @@ h1 img, h2 img {
 .finale {
   display: flex;
   flex-direction: column;
-  padding: max(clamp(16px, calc(4.2 * var(--screen-unit)), 40px), calc(env(safe-area-inset-top, 0px) + 8px))
+  padding: max(clamp(16px, calc(6 * var(--screen-unit) - 7px), 52px), calc(env(safe-area-inset-top, 0px) + 8px))
     var(--pad) max(12px, calc(env(safe-area-inset-bottom, 0px) + 4px));
   color: #f6f1f5;
   overflow: auto;
@@ -348,7 +348,7 @@ h1 img, h2 img {
   align-content: center;
   flex: 1 0 auto;
   gap: clamp(12px, calc(2.4 * var(--screen-unit)), 23px);
-  padding-block-start: clamp(12px, calc(8 * var(--screen-unit) - 24px), 52px);
+  padding-block-end: clamp(0px, calc(8 * var(--screen-unit) - 57px), 18px);
 }
 .award-section { display: grid; justify-items: center; }
 .finale-logo { align-self: center; flex: none; width: clamp(74px, 21vw, 98px); height: auto; }
@@ -483,7 +483,7 @@ h1 img, h2 img {
 }
 
 @media (max-height: 710px) {
-  .final-body { gap: clamp(9px, calc(2 * var(--screen-unit)), 15px); padding-block-start: 12px; }
+  .final-body { gap: clamp(9px, calc(2 * var(--screen-unit)), 15px); padding-block-start: 8px; }
   .badge-button { width: clamp(124px, min(56vw, calc(32 * var(--screen-unit))), 218px); }
   .final-footer { margin-top: 9px; gap: 5px; }
 }
