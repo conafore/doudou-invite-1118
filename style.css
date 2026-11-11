@@ -11,6 +11,13 @@
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; min-width: 280px; }
 h1, h2, p { margin: 0; }
+.type-glyph {
+  display: inline-block;
+  width: var(--glyph-width);
+  max-width: 100%;
+  height: auto;
+  vertical-align: -.1em;
+}
 button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 :is(button, a):focus-visible { outline: 2px solid #8289e0; outline-offset: 5px; }
 button svg { pointer-events: none; }

@@ -179,23 +179,39 @@ function alignFilmEntrance() {
   ], { duration: 480, easing: 'cubic-bezier(.22, .65, .35, 1)' });
 }
 
-function showPlaybackState(state, message = '') {
+const playbackLabels = {
+  loading: ['正在加载影片', 5909, 939],
+  slow: ['影片加载较慢', 5950, 935],
+  unavailable: ['暂时无法加载影片', 7897, 935],
+  retry: ['点一下继续播放影片', 8909, 935],
+};
+
+function showPlaybackState(state, label) {
   stage.dataset.playback = state;
   playbackMessage.inert = state === 'playing';
-  playbackStatus.textContent = message;
+  playbackStatus.textContent = '';
+  if (label) {
+    const [caption, width, height] = playbackLabels[label];
+    const glyph = new Image(width, height);
+    glyph.className = 'type-glyph';
+    glyph.alt = caption;
+    glyph.src = `assets/qihei/${label}.svg`;
+    glyph.style.setProperty('--glyph-width', `${width / 1000}em`);
+    playbackStatus.append(glyph);
+  }
 }
 
 function waitForFilm() {
   clearTimeout(playbackTimer);
-  showPlaybackState('waiting', '正在加载影片');
+  showPlaybackState('waiting', 'loading');
   playbackTimer = setTimeout(() => {
-    if (stage.dataset.scene === 'film') showPlaybackState('retry', '影片加载较慢');
+    if (stage.dataset.scene === 'film') showPlaybackState('retry', 'slow');
   }, 6500);
 }
 
 function retryPlayback() {
   clearTimeout(playbackTimer);
-  showPlaybackState('retry', film.error ? '暂时无法加载影片' : '点一下继续播放影片');
+  showPlaybackState('retry', film.error ? 'unavailable' : 'retry');
 }
 
 function playFilm() {

@@ -9,10 +9,10 @@
   <title>灵感兜不住 · 终轮答辩邀请函</title>
   <link rel="icon" href="assets/spark.svg" type="image/svg+xml">
   <link rel="preload" href="assets/doudou-idle.webp" as="image">
-  <link rel="stylesheet" href="style.css?v=20261111-finale">
+  <link rel="stylesheet" href="style.css?v=20261111-qihei">
   <script src="assets/vendor/anime.min.js" defer></script>
   <script src="assets/medal-renderer.min.js?v=20261111-finale" defer></script>
-  <script src="invitation.js?v=20261111-finale" defer></script>
+  <script src="invitation.js?v=20261111-qihei" defer></script>
 </head>
 <body>
   <main class="invitation" id="invitation" data-scene="idle" aria-label="灵感兜不住 · 终轮答辩邀请函">
@@ -29,13 +29,13 @@
 
     <div class="opening" id="opening">
       <div class="opening-copy">
-        <p class="eyebrow">兜兜给你的一封邀请函</p>
-        <h1><img src="assets/opening-title.svg" alt="灵感兜不住" width="4966" height="989"></h1>
+        <p class="eyebrow"><img class="type-glyph" src="assets/qihei/eyebrow.svg" alt="兜兜给你的一封邀请函" width="9875" height="940" style="--glyph-width:9.875em"></p>
+        <h1><img src="assets/opening-title.svg?v=20261111-qihei" alt="灵感兜不住" width="4919" height="939"></h1>
       </div>
       <div class="prompt">
         <span class="prompt-rings" aria-hidden="true"><i></i><i></i></span>
         <button type="button" class="open-button" id="open-button">
-          <span>点击打开</span>
+          <span><img class="type-glyph" src="assets/qihei/open.svg" alt="点击打开" width="3920" height="936" style="--glyph-width:3.92em"></span>
         </button>
       </div>
       <img class="opening-logo" src="assets/workshop-logo.svg" alt="中国美术学院 × 抖音电商设计" width="81" height="22">
@@ -43,13 +43,13 @@
 
     <div class="playback-message" id="playback-message" inert>
       <p id="playback-status" role="status"></p>
-      <button type="button" class="quiet-button" id="play-film">继续播放</button>
+      <button type="button" class="quiet-button" id="play-film"><img class="type-glyph" src="assets/qihei/continue.svg" alt="继续播放" width="3942" height="933" style="--glyph-width:3.942em"></button>
     </div>
     <div class="film-controls" id="film-controls" inert>
       <button type="button" class="quiet-button" id="sound" aria-label="关闭声音" aria-pressed="true">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path class="sound-off" d="m15 10 5 5m0-5-5 5"/><path class="sound-on" d="M15 9a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></svg>
       </button>
-      <button type="button" class="quiet-button skip" id="skip">查看邀请</button>
+      <button type="button" class="quiet-button skip" id="skip"><img class="type-glyph" src="assets/qihei/skip.svg" alt="查看邀请" width="3938" height="919" style="--glyph-width:3.938em"></button>
     </div>
 
     <div class="finale-atmosphere" aria-hidden="true"></div>
@@ -86,25 +86,25 @@
               </span>
             </span>
           </button>
-          <p class="badge-hint reveal" id="badge-hint">点击翻面 · 拖动旋转</p>
+          <p class="badge-hint reveal" id="badge-hint"><img class="type-glyph" src="assets/qihei/badge-hint.svg" alt="点击翻面 · 拖动旋转" width="9601" height="941" style="--glyph-width:9.601em"></p>
         </div>
 
         <div class="event-copy">
-          <h2 class="reveal" id="event-title" tabindex="-1"><img src="assets/finale-title.svg" alt="邀请函" width="2948" height="976"></h2>
-          <p class="invitation-salutation reveal">诚邀您参加</p>
-          <p class="organizers reveal">国美 × 抖音电商设计<br>共创工作坊终轮答辩</p>
+          <h2 class="reveal" id="event-title" tabindex="-1"><img src="assets/finale-title.svg?v=20261111-qihei" alt="邀请函" width="2902" height="923"></h2>
+          <p class="invitation-salutation reveal"><img class="type-glyph" src="assets/qihei/salutation.svg" alt="诚邀您参加" width="4887" height="945" style="--glyph-width:4.887em"></p>
+          <p class="organizers reveal"><img class="type-glyph" src="assets/qihei/organizers.svg" alt="国美 × 抖音电商设计" width="9202" height="951" style="--glyph-width:9.202em"><br><img class="type-glyph" src="assets/qihei/workshop.svg" alt="共创工作坊终轮答辩" width="8921" height="945" style="--glyph-width:8.921em"></p>
         </div>
 
         <div class="event-date reveal">
-          <time datetime="2026-11-19T13:00:00+08:00"><span class="date-numbers">2026 年 11 月 19 日（周四）</span><span class="date-detail">13:00–17:00</span></time>
+          <time datetime="2026-11-19T13:00:00+08:00"><span class="date-numbers"><img class="type-glyph" src="assets/qihei/date.svg" alt="2026 年 11 月 19 日（周四）" width="13296" height="965" style="--glyph-width:13.296em"></span><span class="date-detail">13:00–17:00</span></time>
         </div>
       </div>
 
       <footer class="final-footer">
-        <button type="button" class="quiet-button replay" id="replay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11a8 8 0 1 1 2.4 6.2M4 6v5h5"/></svg>重播影片</button>
+        <button type="button" class="quiet-button replay" id="replay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11a8 8 0 1 1 2.4 6.2M4 6v5h5"/></svg><img class="type-glyph" src="assets/qihei/replay.svg" alt="重播影片" width="3907" height="923" style="--glyph-width:3.907em"></button>
         <a class="calendar-link" href="https://www.larkoffice.com/calendar/share?token=f951651fe56fc56c0487add43cbaeb66" target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="14" rx="3"/><path d="M8 4v4m8-4v4M4 10h16m-8 3v4m-2-2h4"/></svg>
-          加入飞书日程
+          <img class="type-glyph" src="assets/qihei/calendar.svg" alt="加入飞书日程" width="5939" height="929" style="--glyph-width:5.939em">
           <svg class="calendar-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7m-7 0h7v7"/></svg>
         </a>
       </footer>
