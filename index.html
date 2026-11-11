@@ -9,10 +9,10 @@
   <title>灵感兜不住 · 终轮答辩邀请函</title>
   <link rel="icon" href="assets/spark.svg" type="image/svg+xml">
   <link rel="preload" href="assets/doudou-idle.webp" as="image">
-  <link rel="stylesheet" href="style.css?v=20261111-engraved">
+  <link rel="stylesheet" href="style.css?v=20261111-satin">
   <script src="assets/vendor/anime.min.js" defer></script>
-  <script src="assets/medal-renderer.min.js?v=20261111-engraved" defer></script>
-  <script src="invitation.js?v=20261111-engraved" defer></script>
+  <script src="assets/medal-renderer.min.js?v=20261111-satin" defer></script>
+  <script src="invitation.js?v=20261111-satin" defer></script>
 </head>
 <body>
   <main class="invitation" id="invitation" data-scene="idle" aria-label="灵感兜不住 · 终轮答辩邀请函">
@@ -71,12 +71,19 @@
                       <stop offset=".5" stop-color="#fff0e8" stop-opacity=".72"/>
                       <stop offset="1" stop-color="#fff0e8" stop-opacity="0"/>
                     </linearGradient>
+                    <radialGradient id="medal-back-light" gradientUnits="userSpaceOnUse" cx="640" cy="500" r="590">
+                      <stop stop-color="#e6c8c1" stop-opacity=".42"/>
+                      <stop offset=".55" stop-color="#b49ba8" stop-opacity=".23"/>
+                      <stop offset="1" stop-color="#a68a9d" stop-opacity="0"/>
+                    </radialGradient>
+                    <clipPath id="medal-back-clip"><use href="#medal-inset-outline"/></clipPath>
                     <polygon id="medal-outline" points="622,17 584,19 548,34 136,281 105,304 87,324 72,352 63,389 63,885 68,909 80,933 116,969 518,1215 550,1231 573,1236 604,1235 633,1225 1016,997 1079,965 1192,927 1205,918 1212,904 1212,889 1190,823 1183,759 1172,745 1163,741 1131,742 1131,388 1126,355 1112,324 1089,297 1056,274 670,35"/>
                   </defs>
                   <use href="#medal-outline" transform="translate(1254 0) scale(-1 1)" fill="#c9bdb8" stroke="#d7cdca" stroke-width="5" stroke-linejoin="round"/>
                   <use href="#medal-outline" transform="translate(1254 0) scale(-1 1)" fill="none" stroke="url(#medal-sweep)" stroke-width="28" stroke-linejoin="round"/>
                   <path id="medal-inset-outline" d="M655 77Q676 64 697 77L1099 315Q1144 341 1144 392V863Q1144 914 1098 941L697 1174Q675 1187 653 1174L254 938Q209 912 209 864V392Q209 342 254 315Z"
-                        fill="#555b65" stroke="#777d88" stroke-width="5"/>
+                        fill="#4b454f" stroke="#756c7a" stroke-width="5"/>
+                  <rect width="1254" height="1254" fill="url(#medal-back-light)" clip-path="url(#medal-back-clip)"/>
                   <path d="M676 442Q682 464 706 472Q682 479 676 502Q669 479 646 472Q669 464 676 442Z" fill="#bcb4c1"/>
                   <image href="assets/medal-engraving.svg?v=20261111-engraved" x="295" y="551" width="762" height="154"/>
                 </svg>
@@ -92,7 +99,7 @@
         </div>
 
         <div class="event-date reveal">
-          <time datetime="2026-11-19T13:00:00+08:00"><span class="date-numbers"><img class="type-glyph" src="assets/qihei/date.svg" alt="2026 年 11 月 19 日（周四）" width="13296" height="965" style="--glyph-width:13.296em"></span><span class="date-detail">13:00–17:00</span></time>
+          <time datetime="2026-11-19T13:00:00+08:00"><span class="date-numbers"><img class="type-glyph" src="assets/qihei/date.svg" alt="2026 年 11 月 19 日（周四）" width="13296" height="965" style="--glyph-width:13.296em"></span><span class="date-detail"><img class="type-glyph" src="assets/qihei/time.svg?v=20261111-satin" alt="13:00–17:00" width="6617" height="783" style="--glyph-width:6.617em"></span></time>
         </div>
       </div>
 

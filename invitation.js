@@ -17,6 +17,7 @@ const badgeButton = document.querySelector('#badge-button');
 const badgeRotor = document.querySelector('#badge-rotor');
 const badgeMotion = document.querySelector('.badge-motion');
 const fallbackSweep = document.querySelector('#medal-sweep');
+const fallbackRearLight = document.querySelector('#medal-back-light');
 const revealItems = [...document.querySelectorAll('.reveal')];
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const motion = window.anime;
@@ -60,6 +61,7 @@ function frame(now) {
       const angle = yaw * Math.PI / 180;
       const offset = (ambientLight + Math.sin(2 * angle)) * 630;
       fallbackSweep.setAttribute('gradientTransform', `translate(${offset} 0)`);
+      fallbackRearLight?.setAttribute('gradientTransform', `translate(${-offset * .72} 0)`);
     }
   }
   if (stage.dataset.scene === 'finale' &&

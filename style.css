@@ -359,9 +359,13 @@ h1 img, h2 img {
 .event-copy h2 img { width: clamp(108px, 34vw, 150px); }
 .organizers { margin-top: clamp(12px, 2.1vh, 20px); color: var(--champagne); font-size: clamp(15px, 4.35vw, 20px); font-weight: 600; line-height: 1.45; }
 .event-date { text-align: center; }
-.event-date time { display: grid; justify-items: center; gap: 3px; color: var(--champagne); font-variant-numeric: tabular-nums; }
-.date-numbers { font-size: clamp(15px, 4.15vw, 19px); font-weight: 600; }
-.date-detail { font-size: clamp(13px, 3.6vw, 16px); letter-spacing: .035em; }
+.event-date time {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  font-size: clamp(15px, 4.15vw, 19px);
+  line-height: 1.25;
+}
 
 .final-footer {
   display: grid;
