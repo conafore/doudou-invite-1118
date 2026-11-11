@@ -98,7 +98,8 @@ async function prepareMedal() {
   medalPrepared = true;
   try {
     await document.fonts.ready;
-    medalRenderer = await window.DoudouMedal.createMedal(badgeMotion, document.querySelector('#medal-outline'));
+    const date = document.querySelector('.badge-date').textContent;
+    medalRenderer = await window.DoudouMedal.createMedal(badgeMotion, document.querySelector('#medal-outline'), date);
     startFrames();
   } catch (error) {
     console.warn('The medal is using the CSS renderer.', error);
@@ -213,6 +214,7 @@ function openInvitation(event) {
   const current = stage.dataset.scene;
   if (current !== 'idle' && current !== 'finale') return;
   if (current === 'finale') finale.scrollTop = 0;
+  stage.toggleAttribute('data-from-opening', current === 'idle');
   filmAlignment?.cancel();
   delete stage.dataset.videoVisible;
   // Keep the matched entrance where the browser already has that range.
@@ -231,12 +233,14 @@ film.addEventListener('playing', () => {
   showPlaybackState('playing');
   if (stage.hasAttribute('data-video-visible')) return;
   // Canvas sampling is optional. Some mobile browsers restrict video readback.
-  try {
-    alignFilmEntrance();
-  } catch {
-    // The crossfade works without frame sampling.
+  if (stage.hasAttribute('data-from-opening')) {
+    try {
+      alignFilmEntrance();
+    } catch {
+      // The crossfade works without frame sampling.
+    }
+    idleVideo.pause();
   }
-  idleVideo.pause();
   stage.dataset.videoVisible = '';
 });
 film.addEventListener('waiting', () => {
@@ -273,17 +277,17 @@ function showFinale(focus) {
   } else {
     motion.createTimeline()
       .add(badgeMotion, {
-        opacity: { from: 0, to: 1, duration: 420 },
-        y: { from: 55, to: 0 },
-        scale: { from: .56, to: 1 },
-        rotateY: { from: -27, to: 0 },
-        rotateZ: { from: -15, to: 0 },
-        duration: 1180, ease: 'outExpo'
-      }, 0)
+        opacity: { from: 0, to: 1, duration: 440 },
+        y: { from: 32, to: 0 },
+        scale: { from: .72, to: 1 },
+        rotateY: { from: -18, to: 0 },
+        rotateZ: { from: -8, to: 0 },
+        duration: 940, ease: 'outExpo'
+      }, 130)
       .add(revealItems, {
         opacity: { from: 0, to: 1 }, y: { from: 11, to: 0 },
         duration: 670, delay: motion.stagger(85), ease: 'outCubic'
-      }, 290);
+      }, 380);
   }
   if (focus) eventTitle.focus({ preventScroll: true });
   startFrames();

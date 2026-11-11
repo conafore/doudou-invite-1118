@@ -17,6 +17,8 @@ button svg { pointer-events: none; }
 
 .invitation {
   --screen-unit: 1vh;
+  --finale-crossfade: .56s;
+  --champagne: #e8b986;
   --pad: clamp(24px, 7.25vw, 38px);
   --top: max(23px, calc(env(safe-area-inset-top, 0px) + 13px));
   --bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 14px));
@@ -62,26 +64,41 @@ button svg { pointer-events: none; }
   border: 0;
   background: #020102;
   touch-action: manipulation;
+  visibility: hidden;
 }
+[data-scene="idle"] .idle-screen,
+[data-scene="film"][data-from-opening] .idle-screen { visibility: visible; }
 .idle-screen:focus-visible { outline-offset: -6px; }
 .idle-screen video { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 .film-wrap { z-index: 3; background: #030303; opacity: 0; transition: opacity .18s var(--ease); pointer-events: none; }
 .film-wrap video { display: block; width: 100%; height: 100%; object-fit: cover; }
 [data-video-visible] .film-wrap { opacity: 1; }
-[data-scene="finale"] .film-wrap { opacity: 0; transition-duration: .55s; }
+/* Hold the last frame until the incoming background has covered it. */
+[data-scene="finale"] .film-wrap { opacity: 0; transition: opacity 0s var(--finale-crossfade); }
 
 .opening { z-index: 6; pointer-events: none; }
 .opening-copy {
   position: absolute;
-  top: max(82px, 13.5%);
+  top: max(calc(var(--top) + 17px), 8.5%);
   left: var(--pad);
   right: var(--pad);
   text-align: center;
+  text-shadow: 0 2px 14px #000a;
   animation: appear .85s .08s var(--ease) both;
 }
-.eyebrow { color: #d7d3db; font-size: 11px; font-weight: 530; letter-spacing: .23em; }
-h1, h2 { font-size: clamp(37px, 11vw, 54px); font-weight: 690; letter-spacing: -.065em; line-height: 1.13; }
-h1 { margin-top: 11px; }
+.eyebrow { color: var(--champagne); font-size: clamp(12px, 3.3vw, 14px); font-weight: 620; letter-spacing: .12em; }
+h1 { margin-top: 9px; }
+h1 img, h2 img { display: block; max-width: 100%; height: auto; margin-inline: auto; }
+.opening-copy h1 img { width: clamp(215px, 72vw, 338px); }
+.opening-logo {
+  position: absolute;
+  left: 50%;
+  bottom: max(calc(var(--bottom) + 10px), 12%);
+  width: clamp(78px, 22vw, 107px);
+  height: auto;
+  translate: -50% 0;
+  animation: appear .85s .26s var(--ease) both;
+}
 .prompt {
   position: absolute;
   z-index: 1;
@@ -237,7 +254,7 @@ h1 { margin-top: 11px; }
   z-index: 4;
   opacity: 0;
   visibility: hidden;
-  transition: opacity .53s var(--ease), visibility 0s .53s;
+  transition: opacity var(--finale-crossfade) var(--ease), visibility 0s var(--finale-crossfade);
 }
 [data-scene="finale"] :is(.finale-atmosphere, .finale) { opacity: 1; visibility: visible; transition-delay: 0s; }
 
@@ -289,6 +306,7 @@ h1 { margin-top: 11px; }
 }
 .final-body { display: grid; align-content: center; flex: 1 0 auto; gap: clamp(12px, calc(2.5 * var(--screen-unit)), 24px); }
 .award-section { display: grid; justify-items: center; }
+.finale-logo { width: clamp(106px, 32vw, 145px); height: auto; margin-bottom: clamp(8px, 2vh, 18px); }
 .badge-button {
   --badge-depth: clamp(7px, calc(1.4 * var(--screen-unit)), 12px);
   position: relative;
@@ -328,14 +346,13 @@ h1 { margin-top: 11px; }
 .badge-hint { padding-block: 7px; color: #bfb4c3; font-size: 11px; letter-spacing: .09em; }
 
 .event-copy { display: grid; justify-items: center; text-align: center; }
-.event-copy h2 { font-size: clamp(39px, 12vw, 57px); }
-.event-name { margin-top: 10px; font-size: clamp(17px, 4.8vw, 21px); font-weight: 640; letter-spacing: .025em; }
-.organizers { margin-top: 9px; font-size: clamp(12px, 3.7vw, 15px); line-height: 1.65; color: #c9becd; }
+.event-copy h2 img { width: clamp(108px, 34vw, 150px); }
+.invitation-salutation { margin-top: clamp(8px, 1.8vh, 15px); color: #e0c7b7; font-size: 12px; letter-spacing: .19em; }
+.organizers { margin-top: 6px; color: #fff0e2; font-size: clamp(15px, 4.35vw, 20px); font-weight: 600; line-height: 1.45; text-wrap: balance; }
 .event-date { text-align: center; }
-.event-date time { display: grid; justify-items: center; gap: 5px; }
-.date-numbers { font-size: clamp(15px, 4.45vw, 19px); font-weight: 550; font-variant-numeric: tabular-nums; }
-.date-detail { color: #e3dbe6; font-size: 13px; }
-.date-detail span { margin-left: 4px; color: #a99db0; font: 10px var(--mono); }
+.event-date time { display: grid; justify-items: center; gap: 3px; color: var(--champagne); font-variant-numeric: tabular-nums; }
+.date-numbers { font-size: clamp(15px, 4.15vw, 19px); font-weight: 600; }
+.date-detail { font-size: clamp(13px, 3.6vw, 16px); letter-spacing: .035em; }
 
 .final-footer {
   display: grid;
@@ -349,7 +366,6 @@ h1 { margin-top: 11px; }
 [data-scene="finale"] .final-footer { opacity: 1; translate: 0; }
 .replay { padding: 0 8px; border-color: transparent; background: transparent; color: #c1b7c6; }
 .replay svg { width: 13px; height: 13px; }
-.calendar-note { color: #b9aebf; font-size: 11px; line-height: 1.55; text-align: center; }
 .calendar-link {
   position: relative;
   display: inline-flex;
@@ -412,9 +428,9 @@ h1 { margin-top: 11px; }
 @media (max-height: 710px) {
   .final-body { gap: clamp(9px, calc(2 * var(--screen-unit)), 15px); }
   .badge-button { width: clamp(124px, calc(31 * var(--screen-unit)), 218px); }
-  .event-copy h2 { font-size: clamp(34px, 11vw, 46px); }
-  .event-name { margin-top: 6px; }
-  .organizers { margin-top: 6px; }
+  .event-copy h2 img { width: clamp(102px, 32vw, 136px); }
+  .finale-logo { margin-bottom: 7px; }
+  .invitation-salutation { margin-top: 7px; }
   .final-footer { margin-top: 9px; gap: 5px; }
 }
 @media (max-width: 360px) {
@@ -422,7 +438,7 @@ h1 { margin-top: 11px; }
 }
 @media (max-height: 540px) {
   .opening-copy { top: 65px; }
-  h1 { font-size: 34px; }
+  .opening-copy h1 img { width: min(58vw, 230px); }
   .open-button { min-height: 44px; }
 }
 @media (max-height: 540px) and (orientation: landscape) {
@@ -431,6 +447,7 @@ h1 { margin-top: 11px; }
     --bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 8px));
   }
   .opening-copy { top: var(--top); }
+  .opening-logo { bottom: var(--bottom); width: 78px; }
   .film-wrap video { object-fit: contain; }
   .playback-message { top: 57%; }
 }
